@@ -4,11 +4,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	accountsRoute = "/accounts"
+)
+
 // NewRouter creates and configures a new router
-func NewRouter() *mux.Router {
+func (s *Server) InitializeRoutes() *mux.Router {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/health-check", HealthCheckHandler).Methods("GET")
+	r.HandleFunc("/health-check", s.HealthCheckHandler).Methods("GET")
+
+	accounts := r.PathPrefix(accountsRoute).Subrouter()
+
+	//single account handlers
+	accounts.HandleFunc("", s.CreateAccountHandler).Methods("POST")
+	accounts.HandleFunc("/{account_id}", s.GetAccountHandler).Methods("GET")
 
 	return r
 }
