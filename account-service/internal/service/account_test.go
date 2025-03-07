@@ -11,7 +11,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/danielkhtse/supreme-adventure/account-service/internal/models"
+	"github.com/danielkhtse/supreme-adventure/account-service/shared/models"
 )
 
 // setupMockDB creates a new mock database connection and gorm DB instance
