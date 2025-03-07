@@ -28,7 +28,7 @@ WORKDIR /app
 COPY --from=builder /app/account-service/account-service .
 
 # Copy environment file
-COPY account-service/.env .env
+COPY .env .env
 
 # Expose port
 EXPOSE 8080

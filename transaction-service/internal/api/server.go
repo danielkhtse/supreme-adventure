@@ -4,26 +4,26 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/danielkhtse/supreme-adventure/account-service/internal/service"
+	"github.com/danielkhtse/supreme-adventure/transaction-service/internal/service"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 )
 
-// Accounts API server
+// Transactions API server
 type Server struct {
-	AccountService *service.AccountService
-	Router         *mux.Router
-	Port           string
+	TransactionService *service.TransactionService
+	Router             *mux.Router
+	Port               string
 }
 
-func (server *Server) Initialize(accountService *service.AccountService) {
-	server.AccountService = accountService
-	server.Port = os.Getenv("ACCOUNT_API_SERVER_PORT")
+func (server *Server) Initialize(transactionService *service.TransactionService) {
+	server.TransactionService = transactionService
+	server.Port = os.Getenv("TRANSACTION_API_SERVER_PORT")
 
 	if server.Port == "" {
-		log.Fatal("ACCOUNT_API_SERVER_PORT environment variable not set")
+		log.Fatal("TRANSACTION_API_SERVER_PORT environment variable not set")
 	}
 
 	server.Router = server.InitializeRoutes()
@@ -31,7 +31,7 @@ func (server *Server) Initialize(accountService *service.AccountService) {
 
 func (server *Server) Run() {
 	log.Info("Listening to port " + server.Port)
-	log.Info("Account API Server Started")
+	log.Info("Transaction API Server Started")
 	allow := os.Getenv("ENV_CORS_ALLOWED_ORIGIN")
 	log.Info("Allow origin: " + allow)
 	c := cors.New(cors.Options{

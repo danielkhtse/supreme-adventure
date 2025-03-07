@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/danielkhtse/supreme-adventure/common/db"
-	model "github.com/danielkhtse/supreme-adventure/transaction-service/internal/model"
+	"github.com/danielkhtse/supreme-adventure/common/models"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
@@ -36,7 +36,7 @@ func NewTransactionService() *TransactionService {
 	}
 
 	//TODO: use migration script to replace AutoMigrate
-	if err := db.GetDB().AutoMigrate(&model.Transaction{}); err != nil {
+	if err := db.GetDB().AutoMigrate(&models.Transaction{}); err != nil {
 		log.Fatal(err)
 	}
 

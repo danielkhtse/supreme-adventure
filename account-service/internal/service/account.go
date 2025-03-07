@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	models "github.com/danielkhtse/supreme-adventure/account-service/shared/models"
 	"github.com/danielkhtse/supreme-adventure/common/db"
+	"github.com/danielkhtse/supreme-adventure/common/models"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
