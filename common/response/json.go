@@ -8,7 +8,7 @@ import (
 
 // StandardResponse represents a common API response format
 type StandardResponse[T any] struct {
-	Message string     `json:"message" example:"Success"`
+	Message string     `json:"message,omitempty" example:"Success"`
 	Data    T          `json:"data,omitempty"`
 	Error   *ErrorInfo `json:"error,omitempty"`
 }
@@ -24,8 +24,10 @@ func SendSuccess[T any](w http.ResponseWriter, status StatusCode, message string
 	if status < 200 || status > 299 {
 		return fmt.Errorf("SendSuccess status code must be between 200-299, got %d", status)
 	}
-	response := StandardResponse[T]{
-		Message: message,
+	response := StandardResponse[T]{}
+
+	if message != "" {
+		response.Message = message
 	}
 	if data != nil {
 		response.Data = *data

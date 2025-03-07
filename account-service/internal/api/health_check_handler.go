@@ -7,6 +7,6 @@ import (
 )
 
 // HealthCheckHandler handles the health check endpoint and returns a 200 status
-func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	response.SendSuccess[string](w, response.StatusOK, "Hello, World!", nil)
 }
