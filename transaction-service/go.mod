@@ -41,4 +41,5 @@ require (
 replace (
 	github.com/danielkhtse/supreme-adventure/account-service => ../account-service
 	github.com/danielkhtse/supreme-adventure/common => ../common
+	github.com/danielkhtse/supreme-adventure/common => ../common
 )
