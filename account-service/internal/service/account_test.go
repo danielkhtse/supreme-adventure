@@ -11,7 +11,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/danielkhtse/supreme-adventure/account-service/internal/models"
+	"github.com/danielkhtse/supreme-adventure/common/models"
 )
 
 // setupMockDB creates a new mock database connection and gorm DB instance
@@ -108,7 +108,7 @@ func TestGetAccount(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"id", "balance"}).
 				AddRow(expectedAccount.ID, expectedAccount.Balance))
 
-		account, err := service.GetAccount(expectedAccount.ID)
+		account, err := service.GetAccount(uint64(expectedAccount.ID))
 		assert.NoError(t, err)
 		assert.NotNil(t, account)
 		assert.Equal(t, expectedAccount.ID, account.ID)

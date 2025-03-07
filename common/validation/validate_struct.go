@@ -4,6 +4,8 @@ import (
 	"reflect"
 
 	"github.com/go-playground/validator/v10"
+
+	"github.com/danielkhtse/supreme-adventure/common/types"
 )
 
 func ValidateStruct(reqPayload interface{}) error {
@@ -41,5 +43,23 @@ func ValidateStruct(reqPayload interface{}) error {
 		return true
 	})
 
+	v.RegisterValidation("transaction_status", validateTransactionStatusEnum)
+
 	return nil
+}
+
+func validateTransactionStatusEnum(fl validator.FieldLevel) bool {
+	transactionStatus, ok := fl.Field().Interface().(types.TransactionStatus)
+	if !ok {
+		return false
+	}
+
+	switch transactionStatus {
+	case types.TransactionStatusPending,
+		types.TransactionStatusCompleted,
+		types.TransactionStatusFailed:
+		return true
+	default:
+		return false
+	}
 }

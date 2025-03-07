@@ -7,15 +7,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/danielkhtse/supreme-adventure/account-service/internal/models"
+	"github.com/danielkhtse/supreme-adventure/common/models"
 	"github.com/danielkhtse/supreme-adventure/common/response"
+	"github.com/danielkhtse/supreme-adventure/common/types"
 	"github.com/danielkhtse/supreme-adventure/common/validation"
 	"github.com/gorilla/mux"
 )
 
 type AccountResponse struct {
-	ID      uint64 `json:"account_id"`
-	Balance string `json:"balance"`
+	ID      types.AccountID `json:"account_id"`
+	Balance string          `json:"balance"`
 }
 
 // GetAccountHandler handles getting a single account
@@ -42,8 +43,8 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 
 // CreateAccountRequest represents the request body for creating an account
 type CreateAccountRequest struct {
-	AccountID      uint64 `json:"account_id" validate:"required,uuid"`
-	InitialBalance string `json:"initial_balance" validate:"required"` //allow upto 2dp
+	AccountID      types.AccountID `json:"account_id" validate:"required,uuid"`
+	InitialBalance string          `json:"initial_balance" validate:"required"` //allow upto 2dp
 }
 
 // CreateAccountHandler handles creating a new account
