@@ -43,7 +43,7 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 // CreateAccountRequest represents the request body for creating an account
 type CreateAccountRequest struct {
 	AccountID      uint64 `json:"account_id" validate:"required,uuid"`
-	InitialBalance string `json:"initial_balance" validate:"required"`
+	InitialBalance string `json:"initial_balance" validate:"required"` //allow upto 2dp
 }
 
 // CreateAccountHandler handles creating a new account

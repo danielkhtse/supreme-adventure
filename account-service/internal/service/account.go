@@ -9,11 +9,12 @@ import (
 	"github.com/danielkhtse/supreme-adventure/account-service/internal/models"
 	"github.com/danielkhtse/supreme-adventure/common/db"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 )
 
 // AccountService handles business logic for account operations
 type AccountService struct {
-	db *db.PostgresDB
+	db *gorm.DB
 }
 
 // NewAccountService creates a new AccountService instance
@@ -41,7 +42,7 @@ func NewAccountService() *AccountService {
 	}
 
 	return &AccountService{
-		db: db,
+		db: db.GetDB(),
 	}
 }
 
@@ -53,33 +54,18 @@ func (s *AccountService) CreateAccount(account *models.Account) error {
 
 	// Check if account already exists
 	var existingAccount models.Account
-	if err := s.db.GetDB().Model(&models.Account{}).First(&existingAccount, "id = ?", account.ID).Error; err == nil {
+	if err := s.db.Model(&models.Account{}).First(&existingAccount, "id = ?", account.ID).Error; err == nil {
 		return fmt.Errorf("account with ID %d already exists", account.ID)
 	}
 
-	return s.db.GetDB().Model(&models.Account{}).Create(account).Error
+	return s.db.Model(&models.Account{}).Create(account).Error
 }
 
 // GetAccount retrieves an account by ID
 func (s *AccountService) GetAccount(id uint64) (*models.Account, error) {
 	var account models.Account
-	if err := s.db.GetDB().First(&account, "id = ?", id).Error; err != nil {
+	if err := s.db.First(&account, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &account, nil
-}
-
-// UpdateAccount updates an existing account
-func (s *AccountService) UpdateAccount(account *models.Account) error {
-	if account == nil {
-		return errors.New("account cannot be nil")
-	}
-
-	// Use Updates instead of Save to properly trigger BeforeUpdate hook
-	return s.db.GetDB().Model(&models.Account{}).Updates(account).Error
-}
-
-// DeleteAccount deletes an account by ID
-func (s *AccountService) DeleteAccount(id uint) error {
-	return s.db.GetDB().Model(&models.Account{}).Delete(&models.Account{}, id).Error
 }
