@@ -12,29 +12,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// TransferFundsRequest represents the request body for transferring funds between accounts
-// swagger:model TransferFundsRequest
+// @Summary Transfer funds between accounts
+// @Description Transfer funds from source account to destination account
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param account_id path string true "Source Account ID"
+// @Param request body TransferFundsRequest true "Transfer request details"
+// @Success 200 {object} struct{} ""
+// @Failure 400 {object} response.ErrorResponse "Invalid request parameters or insufficient balance"
+// @Failure 404 {object} response.ErrorResponse "Source or destination account not found"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /accounts/{account_id}/transfer [post]
 type TransferFundsRequest struct {
 	// The destination account ID to transfer funds to
-	// required: true
-	// example: 12345
-	DestAccountID types.AccountID `json:"dest_account_id" validate:"required,uuid"`
+	DestAccountID types.AccountID `json:"dest_account_id" validate:"required,uuid"` // @example 12345
 
 	// The amount to transfer in smallest currency units (e.g. cents for USD)
-	// required: true
-	// minimum: 1
-	// example: 1000
-	Amount types.AccountBalance `json:"amount" validate:"required,min=1"`
+	Amount types.AccountBalance `json:"amount" validate:"required,min=1"` // @example 1000
 }
 
-// swagger:route POST /accounts/{account_id}/transfer Account transferFunds
-// Transfer funds between accounts
-// responses:
-//
-//	200: description: Funds transferred successfully
-//	400: description: Invalid request parameters or insufficient balance
-//	404: description: Source or destination account not found
-//	500: description: Internal server error
 func (s *Server) TransferFundsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	sourceIDStr := vars["account_id"]

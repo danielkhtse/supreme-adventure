@@ -14,27 +14,25 @@ import (
 )
 
 // AccountResponse represents the response for account operations
-// swagger:model AccountResponse
 type AccountResponse struct {
 	// The unique identifier of the account
-	// required: true
-	// example: 12345
 	ID types.AccountID `json:"account_id"`
 
 	// The current balance in smallest currency units (e.g. cents for USD)
-	// required: true
-	// example: 10000
 	Balance types.AccountBalance `json:"balance"`
 }
 
-// swagger:route GET /accounts/{account_id} Account getAccount
-// Get account details by ID
-// responses:
-//
-//	200: AccountResponse
-//	400: description: Invalid account ID format
-//	404: description: Account not found
-//	500: description: Internal server error
+// @Summary Get account details by ID
+// @Description Get account details by ID
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param account_id path string true "Account ID"
+// @Success 200 {object} AccountResponse "Account details"
+// @Failure 400 {object} response.ErrorResponse "Invalid account ID format"
+// @Failure 404 {object} response.ErrorResponse "Account not found"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /accounts/{account_id} [get]
 func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -50,34 +48,31 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.SendSuccess[AccountResponse](w, response.StatusOK, &AccountResponse{
+	response.SendSuccess(w, response.StatusOK, &AccountResponse{
 		ID:      account.ID,
 		Balance: account.Balance, // smallest units for the currency (e.g. cents for USD)
 	})
 }
 
 // CreateAccountRequest represents the request body for creating an account
-// swagger:model CreateAccountRequest
 type CreateAccountRequest struct {
 	// The unique identifier for the new account
-	// required: true
-	// example: 12345
 	AccountID types.AccountID `json:"account_id" validate:"required,uuid"`
 
 	// The initial balance in smallest currency units (e.g. cents for USD)
-	// required: true
-	// minimum: 0
-	// example: 10000
 	InitialBalance types.AccountBalance `json:"initial_balance" validate:"required,min=0"`
 }
 
-// swagger:route POST /accounts Account createAccount
-// Create a new account
-// responses:
-//
-//	201: description: Account created successfully
-//	400: description: Invalid request body or account already exists
-//	500: description: Internal server error
+// @Summary Create a new account
+// @Description Create a new account with initial balance
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param request body CreateAccountRequest true "Account creation request"
+// @Success 201 {object} nil ""
+// @Failure 400 {object} response.ErrorResponse "Invalid request body or account already exists"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /accounts [post]
 func (s *Server) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var request CreateAccountRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

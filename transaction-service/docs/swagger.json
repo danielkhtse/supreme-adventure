@@ -1,0 +1,184 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/health": {
+            "get": {
+                "description": "Check if the API is healthy",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Check API health status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions": {
+            "post": {
+                "description": "Create a new transaction between accounts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Create a new transaction between accounts",
+                "parameters": [
+                    {
+                        "description": "Transaction creation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateTransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Transaction created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.Transaction"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body, validation error, same source/dest accounts, insufficient balance, or negative amount",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Source or destination account not found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.CreateTransactionRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "destination_account_id",
+                "source_account_id"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "The amount to transfer in smallest currency units (e.g. cents for USD)",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "destination_account_id": {
+                    "description": "The destination account ID to transfer funds to",
+                    "type": "integer"
+                },
+                "source_account_id": {
+                    "description": "The source account ID to transfer funds from",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Transaction": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency",
+                "description",
+                "destination_account_id",
+                "id",
+                "source_account_id",
+                "status"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "We will store the smallest units for the currency (e.g. cents for USD)",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "description": "We simply support USD for now",
+                    "type": "string",
+                    "enum": [
+                        "USD"
+                    ]
+                },
+                "description": {
+                    "type": "string"
+                },
+                "destination_account_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "source_account_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/types.TransactionStatus"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "Message contains details about what went wrong",
+                    "type": "string",
+                    "example": "Invalid request parameters"
+                }
+            }
+        },
+        "types.TransactionStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "completed",
+                "failed"
+            ],
+            "x-enum-varnames": [
+                "TransactionStatusPending",
+                "TransactionStatusCompleted",
+                "TransactionStatusFailed"
+            ]
+        }
+    }
+}

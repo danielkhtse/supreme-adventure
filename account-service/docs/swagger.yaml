@@ -1,0 +1,116 @@
+definitions:
+  api.AccountResponse:
+    properties:
+      account_id:
+        description: The unique identifier of the account
+        type: integer
+      balance:
+        description: The current balance in smallest currency units (e.g. cents for
+          USD)
+        type: integer
+    type: object
+  api.CreateAccountRequest:
+    properties:
+      account_id:
+        description: The unique identifier for the new account
+        type: integer
+      initial_balance:
+        description: The initial balance in smallest currency units (e.g. cents for
+          USD)
+        minimum: 0
+        type: integer
+    required:
+    - account_id
+    - initial_balance
+    type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        description: Message contains details about what went wrong
+        example: Invalid request parameters
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /accounts:
+    post:
+      consumes:
+      - application/json
+      description: Create a new account with initial balance
+      parameters:
+      - description: Account creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Invalid request body or account already exists
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new account
+      tags:
+      - Account
+  /accounts/{account_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get account details by ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: account_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account details
+          schema:
+            $ref: '#/definitions/api.AccountResponse'
+        "400":
+          description: Invalid account ID format
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get account details by ID
+      tags:
+      - Account
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Check if the API is healthy
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Check API health status
+      tags:
+      - Health
+swagger: "2.0"

@@ -13,33 +13,28 @@ import (
 )
 
 // CreateTransactionRequest represents the request body for creating a transaction
-// swagger:model CreateTransactionRequest
 type CreateTransactionRequest struct {
 	// The source account ID to transfer funds from
-	// required: true
-	// example: 12345
-	SourceAccountID types.AccountID `json:"source_account_id" validate:"required"`
+	SourceAccountID types.AccountID `json:"source_account_id" validate:"required"` // @example 12345
 
 	// The destination account ID to transfer funds to
-	// required: true
-	// example: 67890
-	DestAccountID types.AccountID `json:"destination_account_id" validate:"required"`
+	DestAccountID types.AccountID `json:"destination_account_id" validate:"required"` // @example 67890
 
 	// The amount to transfer in smallest currency units (e.g. cents for USD)
-	// required: true
-	// minimum: 1
-	// example: 1000
-	Amount types.AccountBalance `json:"amount" validate:"required,min=1"`
+	Amount types.AccountBalance `json:"amount" validate:"required,min=1"` // @example 1000
 }
 
-// swagger:route POST /transactions Transaction createTransaction
-// Create a new transaction between accounts
-// responses:
-//
-//	201: models.Transaction
-//	400: description: Invalid request body, validation error, same source/dest accounts, insufficient balance, or negative amount
-//	404: description: Source or destination account not found
-//	500: description: Internal server error
+// @Summary Create a new transaction between accounts
+// @Description Create a new transaction between accounts
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Param request body CreateTransactionRequest true "Transaction creation request"
+// @Success 201 {object} models.Transaction "Transaction created successfully"
+// @Failure 400 {object} response.ErrorResponse "Invalid request body, validation error, same source/dest accounts, insufficient balance, or negative amount"
+// @Failure 404 {object} response.ErrorResponse "Source or destination account not found"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /transactions [post]
 func (s *Server) CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Debug("handling create transaction request")
 
