@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/danielkhtse/supreme-adventure/common/types"
 	"github.com/danielkhtse/supreme-adventure/common/validation"
 	"gorm.io/gorm"
@@ -14,6 +16,8 @@ type Transaction struct {
 	Currency        string                  `json:"currency" gorm:"default:'USD'" validate:"required,oneof=USD"` //We simply support USD for now
 	Status          types.TransactionStatus `gorm:"type:varchar(20)" json:"status" validate:"required,transaction_status"`
 	Description     string                  `json:"description" validate:"required"`
+	CreatedAt       time.Time               `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt       time.Time               `json:"updated_at" gorm:"autoUpdateTime"`
 }
 
 func (t *Transaction) BeforeCreate(tx *gorm.DB) error {

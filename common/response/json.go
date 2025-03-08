@@ -14,6 +14,10 @@ type StandardResponse[T any] struct {
 	Data    T      `json:"data,omitempty"`
 }
 
+type ErrorResponse struct {
+	Message string `json:"message,omitempty" example:"Error"`
+}
+
 // SendSuccess sends a success response
 func SendSuccess[T any](w http.ResponseWriter, status StatusCode, data *T) error {
 	if status < 200 || status > 299 {
@@ -40,7 +44,7 @@ func SendError(w http.ResponseWriter, status StatusCode, message string) error {
 	if status < 400 || status > 599 {
 		return fmt.Errorf("SendError status code must be between 400-599, got %d", status)
 	}
-	response := StandardResponse[interface{}]{}
+	response := ErrorResponse{}
 
 	if message != "" {
 		response.Message = message
