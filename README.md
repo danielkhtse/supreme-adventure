@@ -70,21 +70,21 @@ The system consists of the following components:
 
 2. Create your own .env file
 
-   ```
-   cp .env.sample .env
-   ```
-   
-4. Start services:
+    ```
+    cp .env.sample .env
+    ```
+
+3. Start services:
 
     ```
     ./start-services.sh
     ```
 
-5. Run unit tests:
+4. Run unit tests:
     ```
     ./run-unit-test.sh
     ```
-6. Generate Swagger documentation:
+5. Generate Swagger documentation:
 
     ```
     ./generate-docs.sh
@@ -104,10 +104,58 @@ Run unit tests with:
 
 Test reports located in `./test-reports`
 
-## TODO and decisions
+## Performance
+
+### Test Environment
+
+-   Tool: k6
+-   Duration: 11 seconds (based on request rate)
+-   Virtual Users: 50 concurrent users
+-   Environment: Docker containers on local machine 8gb ram, 4 core
+
+### Results Summary
+
+#### Transaction Service
+
+Test on `POST /transactions` - Create a new transaction between accounts
+
+| Metric                | Value    |
+| --------------------- | -------- |
+| Average Response Time | 50.35ms  |
+| 95th Percentile       | 251.23ms |
+| Requests/sec          | 84.17    |
+| Error Rate            | 0%       |
+| Success Rate Checks   | 100%     |
+
+Key Findings:
+
+-   Response time threshold (p95 < 500ms) was met with 251.23ms at 95th percentile
+-   No errors observed during the test
+-   Perfect check pass rate at 100%
+-   Transaction duration averaged 52.28ms with 95th percentile at 136.85ms
+-   System maintained stable performance under load with 50 concurrent users
+
+### Performance Test Reports
+
+#### Run performance test
+
+```
+./run-performance-test.sh
+```
+
+Detailed performance test reports are located in `./performance-test-reports`
+
+# TODO and decisions
 
 -   **UUID v6 Implementation**: Migrate account and transaction identifiers to UUID v6 for improved chronological sorting while maintaining uniqueness
 -   **gRPC Communication**: Implement gRPC for inter-service communication to enhance performance
+-   **Asynchronous Transaction Processing**: Implement asynchronous transaction processing using message queues (RabbitMQ/Kafka) to:
+
+    -   Improve throughput by processing transactions in parallel
+    -   Enable better scalability and fault tolerance
+    -   Provide transaction status updates via webhooks
+    -   Support eventual consistency model for transaction reconciliation
+
 -   **Database Migration Strategy**: Replace GORM auto-migration with explicit migration scripts for better version control and schema management
 -   **Error Handling and Logging**: Add detailed error messages and logging for better debugging
 -   **API Security**: Implement API key authentication and rate limiting for secure usage
