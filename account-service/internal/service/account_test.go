@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/danielkhtse/supreme-adventure/common/models"
+	"github.com/danielkhtse/supreme-adventure/common/types"
 )
 
 // setupMockDB creates a new mock database connection and gorm DB instance
@@ -34,7 +35,7 @@ func setupMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock, *gorm.DB) {
 	return mockDB, mock, db
 }
 
-func TestCreateAccount(t *testing.T) {
+func TestUnitCreateAccount(t *testing.T) {
 	mockDB, mock, db := setupMockDB(t)
 	defer mockDB.Close()
 
@@ -44,10 +45,11 @@ func TestCreateAccount(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		account := &models.Account{
-			ID:       1,
-			Balance:  100.0,
-			Currency: "USD",
-			Status:   "active",
+			ID:             1,
+			Balance:        100.0,
+			InitialBalance: 0,
+			Currency:       "USD",
+			Status:         "active",
 		}
 
 		// Expect check for existing account
@@ -57,8 +59,8 @@ func TestCreateAccount(t *testing.T) {
 
 		// Expect account creation
 		mock.ExpectBegin()
-		mock.ExpectQuery(`INSERT INTO "accounts" \("balance","currency","status","created_at","updated_at","id"\) VALUES \(\$1,\$2,\$3,\$4,\$5,\$6\) RETURNING "id"`).
-			WithArgs(account.Balance, account.Currency, account.Status, sqlmock.AnyArg(), sqlmock.AnyArg(), account.ID).
+		mock.ExpectQuery(`INSERT INTO "accounts" \("balance","initial_balance","currency","status","created_at","updated_at","id"\) VALUES \(\$1,\$2,\$3,\$4,\$5,\$6,\$7\) RETURNING "id"`).
+			WithArgs(account.Balance, account.InitialBalance, account.Currency, account.Status, sqlmock.AnyArg(), sqlmock.AnyArg(), account.ID).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 		mock.ExpectCommit()
 
@@ -89,7 +91,7 @@ func TestCreateAccount(t *testing.T) {
 	})
 }
 
-func TestGetAccount(t *testing.T) {
+func TestUnitGetAccount(t *testing.T) {
 	mockDB, mock, db := setupMockDB(t)
 	defer mockDB.Close()
 
@@ -108,7 +110,7 @@ func TestGetAccount(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"id", "balance"}).
 				AddRow(expectedAccount.ID, expectedAccount.Balance))
 
-		account, err := service.GetAccount(uint64(expectedAccount.ID))
+		account, err := service.GetAccount(types.AccountID(expectedAccount.ID))
 		assert.NoError(t, err)
 		assert.NotNil(t, account)
 		assert.Equal(t, expectedAccount.ID, account.ID)
@@ -123,6 +125,6 @@ func TestGetAccount(t *testing.T) {
 		account, err := service.GetAccount(999)
 		assert.Error(t, err)
 		assert.Nil(t, account)
-		assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
+		assert.Contains(t, err.Error(), "account not found")
 	})
 }
