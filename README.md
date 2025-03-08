@@ -137,6 +137,12 @@ Key Findings:
 
 ### Performance Test Reports
 
+#### Run performance test
+
+```
+./run-performance-test.sh
+```
+
 Detailed performance test reports are located in `./performance-test-reports`
 
 # TODO and decisions
