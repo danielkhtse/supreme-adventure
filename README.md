@@ -102,7 +102,7 @@ Run unit tests with:
 ./run-unit-test.sh
 ```
 
-### Test reports located in `./test-reports`
+Test reports located in `./test-reports`
 
 ## TODO and decisions
 
