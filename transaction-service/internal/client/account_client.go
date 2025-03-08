@@ -4,14 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/danielkhtse/supreme-adventure/common/models"
 	"github.com/danielkhtse/supreme-adventure/common/response"
 	"github.com/danielkhtse/supreme-adventure/common/types"
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,17 +18,8 @@ type AccountClient struct {
 }
 
 func NewAccountClient(baseURL string) *AccountClient {
-
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatal("Error loading .env file")
-	}
-
-	accountServiceURL := os.Getenv("ACCOUNT_SERVICE_URL")
-
 	return &AccountClient{
-		baseURL:    accountServiceURL,
+		baseURL:    baseURL,
 		httpClient: &http.Client{},
 	}
 }
@@ -120,7 +108,7 @@ func (c *AccountClient) TransferFunds(sourceAccountID types.AccountID, destAccou
 	}).Debug("received response from account service")
 
 	if resp.StatusCode != http.StatusOK {
-		var response response.StandardResponse[string]
+		var response response.ErrorResponse
 		if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			logrus.WithError(err).Error("failed to decode error response")
 			return fmt.Errorf("failed to decode error response: %w", err)
