@@ -68,17 +68,23 @@ The system consists of the following components:
     go mod download
     ```
 
-2. Start services:
+2. Create your own .env file
+
+   ```
+   cp .env.sample .env
+   ```
+   
+4. Start services:
 
     ```
     ./start-services.sh
     ```
 
-3. Run unit tests:
+5. Run unit tests:
     ```
     ./run-unit-test.sh
     ```
-4. Generate Swagger documentation:
+6. Generate Swagger documentation:
 
     ```
     ./generate-docs.sh
