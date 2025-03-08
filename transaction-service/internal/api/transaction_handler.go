@@ -12,12 +12,29 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// CreateTransactionRequest represents the request body for creating a transaction
 type CreateTransactionRequest struct {
-	SourceAccountID types.AccountID      `json:"source_account_id" validate:"required"`
-	DestAccountID   types.AccountID      `json:"destination_account_id" validate:"required"`
-	Amount          types.AccountBalance `json:"amount" validate:"required,min=1"` // smallest units for the currency (e.g. cents for USD)
+	// The source account ID to transfer funds from
+	SourceAccountID types.AccountID `json:"source_account_id" validate:"required"` // @example 12345
+
+	// The destination account ID to transfer funds to
+	DestAccountID types.AccountID `json:"destination_account_id" validate:"required"` // @example 67890
+
+	// The amount to transfer in smallest currency units (e.g. cents for USD)
+	Amount types.AccountBalance `json:"amount" validate:"required,min=1"` // @example 1000
 }
 
+// @Summary Create a new transaction between accounts
+// @Description Create a new transaction between accounts
+// @Tags Transaction
+// @Accept json
+// @Produce json
+// @Param request body CreateTransactionRequest true "Transaction creation request"
+// @Success 201 {object} models.Transaction
+// @Failure 400 {object} response.ErrorResponse "Invalid request body, validation error, same source/dest accounts, insufficient balance, or negative amount"
+// @Failure 404 {object} response.ErrorResponse "Source or destination account not found"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /transactions [post]
 func (s *Server) CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Debug("handling create transaction request")
 

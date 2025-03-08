@@ -13,12 +13,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// AccountResponse represents the response for account operations
 type AccountResponse struct {
-	ID      types.AccountID      `json:"account_id"`
+	// The unique identifier of the account
+	ID types.AccountID `json:"account_id"`
+
+	// The current balance in smallest currency units (e.g. cents for USD)
 	Balance types.AccountBalance `json:"balance"`
 }
 
-// GetAccountHandler handles getting a single account
+// @Summary Get account details by ID
+// @Description Get account details by ID
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param account_id path string true "Account ID"
+// @Success 200 {object} AccountResponse "Account details"
+// @Failure 400 {object} response.ErrorResponse "Invalid account ID format"
+// @Failure 404 {object} response.ErrorResponse "Account not found"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /accounts/{account_id} [get]
 func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -34,7 +48,7 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.SendSuccess[AccountResponse](w, response.StatusOK, &AccountResponse{
+	response.SendSuccess(w, response.StatusOK, &AccountResponse{
 		ID:      account.ID,
 		Balance: account.Balance, // smallest units for the currency (e.g. cents for USD)
 	})
@@ -42,11 +56,23 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 
 // CreateAccountRequest represents the request body for creating an account
 type CreateAccountRequest struct {
-	AccountID      types.AccountID      `json:"account_id" validate:"required,uuid"`
-	InitialBalance types.AccountBalance `json:"initial_balance" validate:"required,min=0"` //smallest units for the currency (e.g. cents for USD)
+	// The unique identifier for the new account
+	AccountID types.AccountID `json:"account_id" validate:"required,uuid"`
+
+	// The initial balance in smallest currency units (e.g. cents for USD)
+	InitialBalance types.AccountBalance `json:"initial_balance" validate:"required,min=0"`
 }
 
-// CreateAccountHandler handles creating a new account
+// @Summary Create a new account
+// @Description Create a new account with initial balance
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param request body CreateAccountRequest true "Account creation request"
+// @Success 201
+// @Failure 400 {object} response.ErrorResponse "Invalid request body or account already exists"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /accounts [post]
 func (s *Server) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var request CreateAccountRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

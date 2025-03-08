@@ -1,0 +1,127 @@
+definitions:
+  api.CreateTransactionRequest:
+    properties:
+      amount:
+        description: The amount to transfer in smallest currency units (e.g. cents
+          for USD)
+        minimum: 1
+        type: integer
+      destination_account_id:
+        description: The destination account ID to transfer funds to
+        type: integer
+      source_account_id:
+        description: The source account ID to transfer funds from
+        type: integer
+    required:
+    - amount
+    - destination_account_id
+    - source_account_id
+    type: object
+  models.Transaction:
+    properties:
+      amount:
+        description: We will store the smallest units for the currency (e.g. cents
+          for USD)
+        minimum: 1
+        type: integer
+      created_at:
+        type: string
+      currency:
+        description: We simply support USD for now
+        enum:
+        - USD
+        type: string
+      description:
+        type: string
+      destination_account_id:
+        type: integer
+      id:
+        type: integer
+      source_account_id:
+        type: integer
+      status:
+        $ref: '#/definitions/types.TransactionStatus'
+      updated_at:
+        type: string
+    required:
+    - amount
+    - currency
+    - description
+    - destination_account_id
+    - id
+    - source_account_id
+    - status
+    type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        description: Message contains details about what went wrong
+        example: Invalid request parameters
+        type: string
+    type: object
+  types.TransactionStatus:
+    enum:
+    - pending
+    - completed
+    - failed
+    type: string
+    x-enum-varnames:
+    - TransactionStatusPending
+    - TransactionStatusCompleted
+    - TransactionStatusFailed
+info:
+  contact: {}
+paths:
+  /health-check:
+    get:
+      consumes:
+      - application/json
+      description: Check if the API is healthy
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Check API health status
+      tags:
+      - Health
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      description: Create a new transaction between accounts
+      parameters:
+      - description: Transaction creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Transaction'
+        "400":
+          description: Invalid request body, validation error, same source/dest accounts,
+            insufficient balance, or negative amount
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Source or destination account not found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new transaction between accounts
+      tags:
+      - Transaction
+swagger: "2.0"

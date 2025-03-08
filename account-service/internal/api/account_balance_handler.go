@@ -12,12 +12,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// @Summary Transfer funds between accounts
+// @Description Transfer funds from source account to destination account
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param account_id path string true "Source Account ID"
+// @Param request body TransferFundsRequest true "Transfer request details"
+// @Success 200
+// @Failure 400 {object} response.ErrorResponse "Invalid request parameters or insufficient balance"
+// @Failure 404 {object} response.ErrorResponse "Source or destination account not found"
+// @Failure 500 {object} response.ErrorResponse "Internal server error"
+// @Router /accounts/{account_id}/transfer [post]
 type TransferFundsRequest struct {
-	DestAccountID types.AccountID      `json:"dest_account_id" validate:"required,uuid"`
-	Amount        types.AccountBalance `json:"amount" validate:"required,min=1"` // smallest units for the currency (e.g. cents for USD)
+	// The destination account ID to transfer funds to
+	DestAccountID types.AccountID `json:"dest_account_id" validate:"required,uuid"` // @example 12345
+
+	// The amount to transfer in smallest currency units (e.g. cents for USD)
+	Amount types.AccountBalance `json:"amount" validate:"required,min=1"` // @example 1000
 }
 
-// TransferFundsHandler handles fund transfers between accounts
 func (s *Server) TransferFundsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	sourceIDStr := vars["account_id"]
