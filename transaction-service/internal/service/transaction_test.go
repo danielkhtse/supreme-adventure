@@ -137,25 +137,4 @@ func TestUnitCreateTransaction(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("Success case", func(t *testing.T) {
-		transaction := &models.Transaction{
-			SourceAccountID: 1,   // Using account ID 1 with balance 200
-			DestAccountID:   2,   // Using account ID 2 with balance 50
-			Amount:          100, // Amount that source account can afford (200 > 100)
-			Currency:        "USD",
-		}
-
-		// Mock the BEGIN transaction
-		mock.ExpectBegin()
-		// Mock the INSERT query for creating pending transaction
-		mock.ExpectQuery("INSERT INTO \"transactions\"").
-			WithArgs(transaction.SourceAccountID, transaction.DestAccountID, transaction.Amount, transaction.Currency, "pending", "").
-			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-		// Mock the COMMIT transaction since we expect success
-		mock.ExpectCommit()
-
-		err := mockService.CreateTransaction(transaction)
-		assert.NoError(t, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
 }

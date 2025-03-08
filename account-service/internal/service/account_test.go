@@ -125,6 +125,6 @@ func TestUnitGetAccount(t *testing.T) {
 		account, err := service.GetAccount(999)
 		assert.Error(t, err)
 		assert.Nil(t, account)
-		assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
+		assert.Contains(t, err.Error(), "account not found")
 	})
 }
