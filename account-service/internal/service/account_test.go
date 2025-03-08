@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/danielkhtse/supreme-adventure/common/models"
+	"github.com/danielkhtse/supreme-adventure/common/types"
 )
 
 // setupMockDB creates a new mock database connection and gorm DB instance
@@ -108,7 +109,7 @@ func TestGetAccount(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"id", "balance"}).
 				AddRow(expectedAccount.ID, expectedAccount.Balance))
 
-		account, err := service.GetAccount(uint64(expectedAccount.ID))
+		account, err := service.GetAccount(types.AccountID(expectedAccount.ID))
 		assert.NoError(t, err)
 		assert.NotNil(t, account)
 		assert.Equal(t, expectedAccount.ID, account.ID)

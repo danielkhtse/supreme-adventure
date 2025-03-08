@@ -19,6 +19,7 @@ func (s *Server) InitializeRoutes() *mux.Router {
 	//single account handlers
 	accounts.HandleFunc("", s.CreateAccountHandler).Methods("POST")
 	accounts.HandleFunc("/{account_id}", s.GetAccountHandler).Methods("GET")
+	accounts.HandleFunc("/{account_id}/balance/transfer", s.TransferFundsHandler).Methods("PUT")
 
 	return r
 }

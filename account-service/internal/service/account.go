@@ -8,6 +8,7 @@ import (
 
 	"github.com/danielkhtse/supreme-adventure/common/db"
 	"github.com/danielkhtse/supreme-adventure/common/models"
+	"github.com/danielkhtse/supreme-adventure/common/types"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
@@ -62,9 +63,12 @@ func (s *AccountService) CreateAccount(account *models.Account) error {
 }
 
 // GetAccount retrieves an account by ID
-func (s *AccountService) GetAccount(id uint64) (*models.Account, error) {
+func (s *AccountService) GetAccount(id types.AccountID) (*models.Account, error) {
 	var account models.Account
 	if err := s.db.First(&account, "id = ?", id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("account not found")
+		}
 		return nil, err
 	}
 	return &account, nil
