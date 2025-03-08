@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,8 +14,8 @@ import (
 )
 
 type AccountResponse struct {
-	ID      types.AccountID `json:"account_id"`
-	Balance string          `json:"balance"`
+	ID      types.AccountID      `json:"account_id"`
+	Balance types.AccountBalance `json:"balance"`
 }
 
 // GetAccountHandler handles getting a single account
@@ -29,7 +28,7 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account, err := s.AccountService.GetAccount(requestAccountId)
+	account, err := s.AccountService.GetAccount(types.AccountID(requestAccountId))
 	if err != nil {
 		response.SendError(w, response.StatusNotFound, "Account not found")
 		return
@@ -37,14 +36,14 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 
 	response.SendSuccess[AccountResponse](w, response.StatusOK, "", &AccountResponse{
 		ID:      account.ID,
-		Balance: fmt.Sprintf("%.2f", float64(account.Balance)/100), //TODO: simplify the balance to 2 decimal places for now
+		Balance: account.Balance, // smallest units for the currency (e.g. cents for USD)
 	})
 }
 
 // CreateAccountRequest represents the request body for creating an account
 type CreateAccountRequest struct {
-	AccountID      types.AccountID `json:"account_id" validate:"required,uuid"`
-	InitialBalance string          `json:"initial_balance" validate:"required"` //allow upto 2dp
+	AccountID      types.AccountID      `json:"account_id" validate:"required,uuid"`
+	InitialBalance types.AccountBalance `json:"initial_balance" validate:"required,min=0"` //smallest units for the currency (e.g. cents for USD)
 }
 
 // CreateAccountHandler handles creating a new account
@@ -60,17 +59,9 @@ func (s *Server) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convert balance from decimal string to int64 (cents)
-	balanceFloat, err := strconv.ParseFloat(request.InitialBalance, 64)
-	if err != nil {
-		response.SendError(w, response.StatusBadRequest, "Invalid balance format")
-		return
-	}
-	balanceInt := int64(balanceFloat * 100) //depends on the currency, we simply it and assumpt it's USD for now and convert it to cents
-
 	if err := s.AccountService.CreateAccount(&models.Account{
-		ID:      request.AccountID,
-		Balance: balanceInt,
+		ID:             request.AccountID,
+		InitialBalance: request.InitialBalance,
 	}); err != nil {
 		if strings.Contains(err.Error(), "already exists") {
 			response.SendError(w, response.StatusBadRequest, "Account already exists")

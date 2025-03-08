@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	accountsRoute = "/accounts"
+	transactionsRoute = "/transactions"
 )
 
 // NewRouter creates and configures a new router
@@ -14,10 +14,10 @@ func (s *Server) InitializeRoutes() *mux.Router {
 
 	r.HandleFunc("/health-check", s.HealthCheckHandler).Methods("GET")
 
-	accounts := r.PathPrefix(accountsRoute).Subrouter()
+	transactions := r.PathPrefix(transactionsRoute).Subrouter()
 
 	//single account handlers
-	accounts.HandleFunc("", s.CreateTransactionHandler).Methods("POST")
+	transactions.HandleFunc("", s.CreateTransactionHandler).Methods("POST")
 
 	return r
 }
