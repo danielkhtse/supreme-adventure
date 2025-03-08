@@ -12,12 +12,29 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// TransferFundsRequest represents the request body for transferring funds between accounts
+// swagger:model TransferFundsRequest
 type TransferFundsRequest struct {
-	DestAccountID types.AccountID      `json:"dest_account_id" validate:"required,uuid"`
-	Amount        types.AccountBalance `json:"amount" validate:"required,min=1"` // smallest units for the currency (e.g. cents for USD)
+	// The destination account ID to transfer funds to
+	// required: true
+	// example: 12345
+	DestAccountID types.AccountID `json:"dest_account_id" validate:"required,uuid"`
+
+	// The amount to transfer in smallest currency units (e.g. cents for USD)
+	// required: true
+	// minimum: 1
+	// example: 1000
+	Amount types.AccountBalance `json:"amount" validate:"required,min=1"`
 }
 
-// TransferFundsHandler handles fund transfers between accounts
+// swagger:route POST /accounts/{account_id}/transfer Account transferFunds
+// Transfer funds between accounts
+// responses:
+//
+//	200: description: Funds transferred successfully
+//	400: description: Invalid request parameters or insufficient balance
+//	404: description: Source or destination account not found
+//	500: description: Internal server error
 func (s *Server) TransferFundsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	sourceIDStr := vars["account_id"]

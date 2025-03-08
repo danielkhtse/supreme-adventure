@@ -13,12 +13,28 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// AccountResponse represents the response for account operations
+// swagger:model AccountResponse
 type AccountResponse struct {
-	ID      types.AccountID      `json:"account_id"`
+	// The unique identifier of the account
+	// required: true
+	// example: 12345
+	ID types.AccountID `json:"account_id"`
+
+	// The current balance in smallest currency units (e.g. cents for USD)
+	// required: true
+	// example: 10000
 	Balance types.AccountBalance `json:"balance"`
 }
 
-// GetAccountHandler handles getting a single account
+// swagger:route GET /accounts/{account_id} Account getAccount
+// Get account details by ID
+// responses:
+//
+//	200: AccountResponse
+//	400: description: Invalid account ID format
+//	404: description: Account not found
+//	500: description: Internal server error
 func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -41,12 +57,27 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateAccountRequest represents the request body for creating an account
+// swagger:model CreateAccountRequest
 type CreateAccountRequest struct {
-	AccountID      types.AccountID      `json:"account_id" validate:"required,uuid"`
-	InitialBalance types.AccountBalance `json:"initial_balance" validate:"required,min=0"` //smallest units for the currency (e.g. cents for USD)
+	// The unique identifier for the new account
+	// required: true
+	// example: 12345
+	AccountID types.AccountID `json:"account_id" validate:"required,uuid"`
+
+	// The initial balance in smallest currency units (e.g. cents for USD)
+	// required: true
+	// minimum: 0
+	// example: 10000
+	InitialBalance types.AccountBalance `json:"initial_balance" validate:"required,min=0"`
 }
 
-// CreateAccountHandler handles creating a new account
+// swagger:route POST /accounts Account createAccount
+// Create a new account
+// responses:
+//
+//	201: description: Account created successfully
+//	400: description: Invalid request body or account already exists
+//	500: description: Internal server error
 func (s *Server) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var request CreateAccountRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

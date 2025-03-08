@@ -6,7 +6,12 @@ import (
 	"github.com/danielkhtse/supreme-adventure/common/response"
 )
 
-// HealthCheckHandler handles the health check endpoint and returns a 200 status
+// swagger:route GET /health Health healthCheck
+// Check API health status
+// responses:
+//
+//	200: description: API is healthy
+//	500: description: Internal server error
 func (s *Server) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	response.SendSuccess[string](w, response.StatusOK, nil)
 }

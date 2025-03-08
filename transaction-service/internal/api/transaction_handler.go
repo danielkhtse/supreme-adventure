@@ -12,12 +12,34 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// CreateTransactionRequest represents the request body for creating a transaction
+// swagger:model CreateTransactionRequest
 type CreateTransactionRequest struct {
-	SourceAccountID types.AccountID      `json:"source_account_id" validate:"required"`
-	DestAccountID   types.AccountID      `json:"destination_account_id" validate:"required"`
-	Amount          types.AccountBalance `json:"amount" validate:"required,min=1"` // smallest units for the currency (e.g. cents for USD)
+	// The source account ID to transfer funds from
+	// required: true
+	// example: 12345
+	SourceAccountID types.AccountID `json:"source_account_id" validate:"required"`
+
+	// The destination account ID to transfer funds to
+	// required: true
+	// example: 67890
+	DestAccountID types.AccountID `json:"destination_account_id" validate:"required"`
+
+	// The amount to transfer in smallest currency units (e.g. cents for USD)
+	// required: true
+	// minimum: 1
+	// example: 1000
+	Amount types.AccountBalance `json:"amount" validate:"required,min=1"`
 }
 
+// swagger:route POST /transactions Transaction createTransaction
+// Create a new transaction between accounts
+// responses:
+//
+//	201: models.Transaction
+//	400: description: Invalid request body, validation error, same source/dest accounts, insufficient balance, or negative amount
+//	404: description: Source or destination account not found
+//	500: description: Internal server error
 func (s *Server) CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	logrus.Debug("handling create transaction request")
 
