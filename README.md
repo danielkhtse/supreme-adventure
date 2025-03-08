@@ -18,9 +18,9 @@ The services are built using Go and communicate with each other via REST APIs. D
 
 ## Features
 
--   Create and manage bank accounts
+-   Create bank accounts
 -   Transfer funds between accounts
--   View account details and transaction history
+-   View account details
 -   API documentation with Swagger UI
 -   Containerized deployment with Docker
 
