@@ -33,6 +33,10 @@ WORKDIR /app
 # Copy the binary from builder
 COPY --from=builder /app/${SERVICE_NAME}/service .
 
+# Copy the docs from builder
+COPY --from=builder /app/${SERVICE_NAME}/docs ./${SERVICE_NAME}/docs
+
+
 # Copy environment file
 COPY .env.docker .env
 

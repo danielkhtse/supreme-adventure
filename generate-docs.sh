@@ -49,10 +49,49 @@ generate_swagger_docs() {
 if ! command -v swag &> /dev/null; then
     echo "Installing swag CLI..."
     go install github.com/swaggo/swag/cmd/swag@latest
+    # Use the full path to swag after installation
+    export PATH="$PATH:$(go env GOPATH)/bin"
 fi
 
 # Generate docs for each service
 generate_swagger_docs "account-service"
 generate_swagger_docs "transaction-service"
+
+# Create swagger-config.json if it doesn't exist
+if [ ! -f "swagger-config.json" ]; then
+    echo "Creating swagger-config.json..."
+    cat > swagger-config.json << EOF
+{
+  "urls": [
+    {
+      "name": "Account Service API",
+      "url": "/account-docs/swagger.json"
+    },
+    {
+      "name": "Transaction Service API",
+      "url": "/transaction-docs/swagger.json"
+    }
+  ],
+  "deepLinking": true,
+  "displayRequestDuration": true,
+  "defaultModelsExpandDepth": 3,
+  "defaultModelExpandDepth": 3,
+  "defaultModelRendering": "example",
+  "docExpansion": "list",
+  "showExtensions": true,
+  "showCommonExtensions": true,
+  "supportedSubmitMethods": [
+    "get",
+    "put",
+    "post",
+    "delete",
+    "options",
+    "head",
+    "patch",
+    "trace"
+  ]
+}
+EOF
+fi
 
 echo "Documentation generation complete!"

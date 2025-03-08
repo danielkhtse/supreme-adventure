@@ -30,7 +30,7 @@ type CreateTransactionRequest struct {
 // @Accept json
 // @Produce json
 // @Param request body CreateTransactionRequest true "Transaction creation request"
-// @Success 201 {object} models.Transaction "Transaction created successfully"
+// @Success 201 {object} models.Transaction
 // @Failure 400 {object} response.ErrorResponse "Invalid request body, validation error, same source/dest accounts, insufficient balance, or negative amount"
 // @Failure 404 {object} response.ErrorResponse "Source or destination account not found"
 // @Failure 500 {object} response.ErrorResponse "Internal server error"

@@ -19,7 +19,7 @@ import (
 // @Produce json
 // @Param account_id path string true "Source Account ID"
 // @Param request body TransferFundsRequest true "Transfer request details"
-// @Success 200 {object} struct{} ""
+// @Success 200
 // @Failure 400 {object} response.ErrorResponse "Invalid request parameters or insufficient balance"
 // @Failure 404 {object} response.ErrorResponse "Source or destination account not found"
 // @Failure 500 {object} response.ErrorResponse "Internal server error"

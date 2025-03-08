@@ -13,6 +13,8 @@ services:
       - ACCOUNT_API_SERVER_PORT=8080
       - ACCOUNT_DATABASE_DSN=postgresql://postgres:postgres@postgres:5432/demo?sslmode=disable
       - ENV_CORS_ALLOWED_ORIGIN=*
+    volumes:
+      - ./account-service/docs:/app/docs
     depends_on:
       - postgres
     networks:
@@ -31,9 +33,25 @@ services:
       - TRANSACTION_DATABASE_DSN=postgresql://postgres:postgres@postgres:5432/demo?sslmode=disable
       - ACCOUNT_SERVICE_URL=http://account-service:8080
       - ENV_CORS_ALLOWED_ORIGIN=*
+    volumes:
+      - ./transaction-service/docs:/app/docs
     depends_on:
       - postgres
       - account-service
+    networks:
+      - microservices-network
+
+  swagger-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.swagger
+    ports:
+      - "3000:8080"
+    environment:
+      - URLS=[{"url":"http://account-service:8080/docs/swagger.json","name":"Account Service"},{"url":"http://transaction-service:8081/docs/swagger.json","name":"Transaction Service"}]
+    depends_on:
+      - account-service
+      - transaction-service
     networks:
       - microservices-network
 

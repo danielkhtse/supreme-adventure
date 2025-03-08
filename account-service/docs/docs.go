@@ -108,7 +108,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/health": {
+        "/health-check": {
             "get": {
                 "description": "Check if the API is healthy",
                 "consumes": [
@@ -123,10 +123,7 @@ const docTemplate = `{
                 "summary": "Check API health status",
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "OK"
                     },
                     "500": {
                         "description": "Internal server error",

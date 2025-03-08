@@ -11,9 +11,9 @@ import (
 // @Tags Health
 // @Accept json
 // @Produce json
-// @Success 200 {object} string ""
+// @Success 200
 // @Failure 500 {object} response.ErrorResponse "Internal server error"
-// @Router /health [get]
+// @Router /health-check [get]
 func (s *Server) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	response.SendSuccess[string](w, response.StatusOK, nil)
 }

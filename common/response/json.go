@@ -39,11 +39,6 @@ func SendSuccess[T any](w http.ResponseWriter, status StatusCode, data *T) error
 	if status < 200 || status > 299 {
 		return fmt.Errorf("SendSuccess status code must be between 200-299, got %d", status)
 	}
-	response := StandardResponse[T]{}
-
-	if data != nil {
-		response.Data = *data
-	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(int(status))
@@ -52,6 +47,13 @@ func SendSuccess[T any](w http.ResponseWriter, status StatusCode, data *T) error
 		"status_code": status,
 	}).Debug("sending success response")
 
+	if data == nil {
+		return json.NewEncoder(w).Encode(struct{}{})
+	}
+
+	response := StandardResponse[T]{
+		Data: *data,
+	}
 	return json.NewEncoder(w).Encode(response.Data)
 }
 
@@ -72,11 +74,6 @@ func SendError(w http.ResponseWriter, status StatusCode, message string) error {
 	if status < 400 || status > 599 {
 		return fmt.Errorf("SendError status code must be between 400-599, got %d", status)
 	}
-	response := ErrorResponse{}
-
-	if message != "" {
-		response.Message = message
-	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(int(status))
@@ -86,5 +83,12 @@ func SendError(w http.ResponseWriter, status StatusCode, message string) error {
 		"message":     message,
 	}).Error("sending error response")
 
+	if message == "" {
+		return json.NewEncoder(w).Encode(struct{}{})
+	}
+
+	response := ErrorResponse{
+		Message: message,
+	}
 	return json.NewEncoder(w).Encode(response)
 }

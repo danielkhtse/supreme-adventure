@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/health": {
+        "/health-check": {
             "get": {
                 "description": "Check if the API is healthy",
                 "consumes": [
@@ -30,10 +30,7 @@ const docTemplate = `{
                 "summary": "Check API health status",
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "OK"
                     },
                     "500": {
                         "description": "Internal server error",
@@ -70,7 +67,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Transaction created successfully",
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.Transaction"
                         }

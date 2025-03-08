@@ -1,0 +1,14 @@
+# Use the official Swagger UI image as base
+FROM swaggerapi/swagger-ui:latest
+
+# Copy Swagger documentation files
+# COPY account-service/docs/swagger.json /usr/share/nginx/html/account-service/docs/swagger.json
+# COPY transaction-service/docs/swagger.json /usr/share/nginx/html/transaction-service/docs/swagger.json
+COPY swagger-ui/index.html /usr/share/nginx/html/index.html
+
+# Add health check to validate if documentation files exist
+
+
+# (echo "Required documentation files not found" && exit 1)
+
+EXPOSE 8080

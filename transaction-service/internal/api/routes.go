@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -18,6 +20,9 @@ func (s *Server) InitializeRoutes() *mux.Router {
 
 	//single account handlers
 	transactions.HandleFunc("", s.CreateTransactionHandler).Methods("POST")
+
+	fs := http.FileServer(http.Dir("transaction-service/docs"))
+	r.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", fs))
 
 	return r
 }

@@ -69,7 +69,7 @@ type CreateAccountRequest struct {
 // @Accept json
 // @Produce json
 // @Param request body CreateAccountRequest true "Account creation request"
-// @Success 201 {object} nil ""
+// @Success 201
 // @Failure 400 {object} response.ErrorResponse "Invalid request body or account already exists"
 // @Failure 500 {object} response.ErrorResponse "Internal server error"
 // @Router /accounts [post]

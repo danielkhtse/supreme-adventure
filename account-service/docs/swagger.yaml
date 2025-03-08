@@ -94,7 +94,7 @@ paths:
       summary: Get account details by ID
       tags:
       - Account
-  /health:
+  /health-check:
     get:
       consumes:
       - application/json
@@ -104,8 +104,6 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            type: string
         "500":
           description: Internal server error
           schema:
