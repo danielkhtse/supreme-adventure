@@ -52,30 +52,30 @@ func (s *AccountService) TransferFunds(sourceAccountID types.AccountID, destAcco
 
 	log.WithField("account_id", firstAccountID).Debug("acquiring lock on first account")
 	var firstAccount models.Account
-	if err := tx.Set("gorm:query_option", "FOR UPDATE NOWAIT").First(&firstAccount, firstAccountID).Error; err != nil {
+	if err := tx.Set("gorm:query_option", "FOR UPDATE WAIT 5").First(&firstAccount, firstAccountID).Error; err != nil {
 		tx.Rollback()
 		log.WithError(err).Error("failed to acquire first account")
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("account not found")
 		}
 		// Check for lock timeout error
-		if err.Error() == "could not obtain lock on row in relation" {
-			return errors.New("failed to acquire lock - timeout")
+		if err.Error() == "lock timeout" {
+			return errors.New("failed to acquire lock - timeout after 5 seconds")
 		}
 		return err
 	}
 
 	log.WithField("account_id", secondAccountID).Debug("acquiring lock on second account")
 	var secondAccount models.Account
-	if err := tx.Set("gorm:query_option", "FOR UPDATE NOWAIT").First(&secondAccount, secondAccountID).Error; err != nil {
+	if err := tx.Set("gorm:query_option", "FOR UPDATE WAIT 5").First(&secondAccount, secondAccountID).Error; err != nil {
 		tx.Rollback()
 		log.WithError(err).Error("failed to acquire second account")
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("account not found")
 		}
 		// Check for lock timeout error
-		if err.Error() == "could not obtain lock on row in relation" {
-			return errors.New("failed to acquire lock - timeout")
+		if err.Error() == "lock timeout" {
+			return errors.New("failed to acquire lock - timeout after 5 seconds")
 		}
 		return err
 	}
