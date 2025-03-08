@@ -15,15 +15,12 @@ type StandardResponse[T any] struct {
 }
 
 // SendSuccess sends a success response
-func SendSuccess[T any](w http.ResponseWriter, status StatusCode, message string, data *T) error {
+func SendSuccess[T any](w http.ResponseWriter, status StatusCode, data *T) error {
 	if status < 200 || status > 299 {
 		return fmt.Errorf("SendSuccess status code must be between 200-299, got %d", status)
 	}
 	response := StandardResponse[T]{}
 
-	if message != "" {
-		response.Message = message
-	}
 	if data != nil {
 		response.Data = *data
 	}
@@ -33,10 +30,9 @@ func SendSuccess[T any](w http.ResponseWriter, status StatusCode, message string
 
 	logrus.WithFields(logrus.Fields{
 		"status_code": status,
-		"message":     message,
 	}).Debug("sending success response")
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.Data)
 }
 
 // SendError sends an error response

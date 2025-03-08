@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: account-service
     ports:
       - "8080:8080"
     environment:
@@ -14,7 +16,26 @@ services:
     depends_on:
       - postgres
     networks:
-      - account-network
+      - microservices-network
+
+  transaction-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: transaction-service
+    ports:
+      - "8081:8081"
+    environment:
+      - TRANSACTION_API_SERVER_PORT=8081
+      - TRANSACTION_DATABASE_DSN=postgresql://postgres:postgres@postgres:5432/demo?sslmode=disable
+      - ACCOUNT_SERVICE_URL=http://account-service:8080
+      - ENV_CORS_ALLOWED_ORIGIN=*
+    depends_on:
+      - postgres
+      - account-service
+    networks:
+      - microservices-network
 
   postgres:
     image: postgres:16-alpine
@@ -27,11 +48,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - account-network
+      - microservices-network
 
 volumes:
   postgres_data:
 
 networks:
-  account-network:
+  microservices-network:
     driver: bridge
