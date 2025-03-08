@@ -34,7 +34,7 @@ func (s *Server) GetAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.SendSuccess[AccountResponse](w, response.StatusOK, "", &AccountResponse{
+	response.SendSuccess[AccountResponse](w, response.StatusOK, &AccountResponse{
 		ID:      account.ID,
 		Balance: account.Balance, // smallest units for the currency (e.g. cents for USD)
 	})
@@ -71,5 +71,5 @@ func (s *Server) CreateAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.SendSuccess[struct{}](w, response.StatusCreated, "", nil)
+	response.SendSuccess[struct{}](w, response.StatusCreated, nil)
 }

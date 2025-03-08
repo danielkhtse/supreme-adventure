@@ -70,5 +70,5 @@ func (s *Server) CreateTransactionHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	response.SendSuccess(w, response.StatusCreated, "", transaction)
+	response.SendSuccess(w, response.StatusCreated, transaction)
 }

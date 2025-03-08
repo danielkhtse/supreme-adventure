@@ -62,12 +62,12 @@ func (c *AccountClient) GetAccount(accountID types.AccountID) (*models.Account, 
 		return nil, fmt.Errorf("failed to fetch account, status code: %d", resp.StatusCode)
 	}
 
-	var response response.StandardResponse[models.Account]
+	var response models.Account
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		logrus.WithError(err).Error("failed to decode account response")
 		return nil, fmt.Errorf("failed to decode account response: %w", err)
 	}
-	account := response.Data
+	account := response
 
 	logrus.WithFields(logrus.Fields{
 		"account_id": account.ID,

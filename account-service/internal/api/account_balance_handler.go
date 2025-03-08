@@ -60,5 +60,5 @@ func (s *Server) TransferFundsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.SendSuccess[struct{}](w, response.StatusOK, "success", nil)
+	response.SendSuccess[struct{}](w, response.StatusOK, nil)
 }
